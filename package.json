@@ -1,0 +1,36 @@
+{
+  "name": "chatbox",
+  "version": "1.0.0",
+  "description": "A chatroom application where you can chat with a variety of people online!",
+  "main": "index.js",
+  "scripts": {
+    "full-install": "npm i && cd backend && npm i && cd .. && cd client && npm i && cd ..",
+    "start": "npm run start --prefix backend",
+    "backend": "npm run server --prefix backend",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run backend\" \"npm run client\"",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Titanium14/ChatBox.git"
+  },
+  "author": "Wai Jyuen Phang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Titanium14/ChatBox/issues"
+  },
+  "homepage": "https://github.com/Titanium14/ChatBox#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "concurrently": "^4.1.0",
+    "express": "^4.16.4",
+    "gravatar": "^1.8.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.4.19",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "validator": "^10.11.0"
+  }
+}
