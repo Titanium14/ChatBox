@@ -2,9 +2,9 @@
   "name": "chatbox",
   "version": "1.0.0",
   "description": "A chatroom application where you can chat with a variety of people online!",
-  "main": "index.js",
+  "main": "./backend/server.js",
   "scripts": {
-    "full-install": "npm i && cd backend && npm i && cd .. && cd client && npm i && cd ..",
+    "full-install": "npm i && cd client && npm i && cd ..",
     "start": "npm run start --prefix backend",
     "backend": "npm run server --prefix backend",
     "client": "npm start --prefix client",
@@ -32,5 +32,8 @@
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "validator": "^10.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.10"
   }
 }
