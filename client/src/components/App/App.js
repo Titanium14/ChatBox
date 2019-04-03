@@ -10,6 +10,7 @@ import './App.css';
 import Home from '../Home/Home';
 import Auth from '../Auth/Auth';
 import Dashboard from '../Dashboard/Dashboard';
+import JoinRoom from '../JoinRoom/JoinRoom';
 
 import NavBar from './components/NavBar';
 import Footer from './components/footer';
@@ -50,6 +51,7 @@ class App extends Component {
               <PrivateRoute exact path="/Dashboard" component={Dashboard} />
               <Route exact path="/Auth/login" component={Auth} />
               <Route exact path="/Auth/register" component={Auth} />
+              <Route exact path="/JoinRoom" component={JoinRoom} />
               <Route render={() => <LoadingSpinner />} />
             </Switch>
             <Footer />

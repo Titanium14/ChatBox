@@ -13,6 +13,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { logoutUser } from '../../../redux/actions/authActions';
 
+import CreateRoom from './createRoom';
+
 class NavBar extends Component {
   constructor(props) {
     super(props);
@@ -80,8 +82,8 @@ class NavBar extends Component {
           <Nav className="mr-auto" navbar>
             <NavLink
               active={currentPage === '/CreateRoom' ? true : false}
-              href="/CreateRoom">
-              Create a Room
+              href="#">
+              <CreateRoom />
             </NavLink>
             <NavLink
               active={currentPage === '/JoinRoom' ? true : false}
