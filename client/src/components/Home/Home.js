@@ -1,6 +1,8 @@
 import React from 'react';
 import { Row, Col, Button } from 'reactstrap';
 
+// Importing all components to be used within this file.
+/* Home/.... */
 import Welcome from './components/welcome';
 
 const Home = () => {

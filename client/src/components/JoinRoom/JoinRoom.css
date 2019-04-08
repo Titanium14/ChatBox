@@ -1,0 +1,28 @@
+.s-link {
+  color: #000;
+}
+
+.s-link:hover {
+  text-decoration: none;
+  color: white;
+}
+
+.s-remove-padding {
+  padding: 0;
+}
+
+.s-hover-bg:hover {
+  background-color: #007bff;
+  color: white;
+  -webkit-transition: background-color 200ms linear;
+    -ms-transition: background-color 200ms linear;
+    transition: background-color 200ms linear;
+}
+
+.s-apply-padding {
+  padding: 12px 20px;
+}
+
+.s-parent-width {
+  flex: 1
+}

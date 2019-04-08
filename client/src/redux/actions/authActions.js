@@ -2,9 +2,19 @@ import axios from 'axios';
 import setAuthToken from '../utils/setAuthToken';
 import jwt_decode from 'jwt-decode';
 
-import { GET_ERRORS, SET_CURRENT_USER } from './types';
+import { GET_ERRORS, GET_USERS, SET_CURRENT_USER } from './types';
 
-// Register User
+// Get users
+export const getUsers = () => dispatch => {
+  axios
+    .get('/api/users')
+    .then(res => {
+      dispatch({ type: GET_USERS, payload: res.data });
+    })
+    .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
+};
+
+// Register user
 export const registerUser = (userData, history) => dispatch => {
   axios
     .post('/api/users/register', userData)
@@ -19,20 +29,19 @@ export const registerUser = (userData, history) => dispatch => {
     );
 };
 
-// Login - Get User token
+// Login user
 export const loginUser = userData => dispatch => {
   axios
     .post('/api/users/login', userData)
     .then(res => {
-      // Save to localStorage
+      // Retrieve token from request response
       const { token } = res.data;
-      // Set token to ls
+      // Sets the token retrieved from local storage
       localStorage.setItem('jwtToken', token);
-      // Set token to Auth header
       setAuthToken(token);
-      // Decode token to get user data
+      // Decodes token and retrieves user's info and token expiration
       const decoded = jwt_decode(token);
-      // Set current user
+      // Sets user and authenticates user
       dispatch(setCurrentUser(decoded));
     })
     .catch(err =>
@@ -53,13 +62,12 @@ export const setCurrentUser = decoded => {
 
 // Log user out
 export const logoutUser = history => dispatch => {
-  // Remove token from localStorage
+  // Removes token from local storage
   localStorage.removeItem('jwtToken');
-  // Remove auth header for future requests
   setAuthToken(false);
-  // Set current user to {} which will set isAuthenticated to false
+  // This will set isAuthenticated to false, i.e. the user is now a guest user
   dispatch(setCurrentUser({}));
-  // Send user to homepage
+  // Send user to the login page
   if (history !== null) {
     history.push('/Auth/login');
   }

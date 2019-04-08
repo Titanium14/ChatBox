@@ -6,7 +6,7 @@ const TextFieldGroup = ({
   name,
   placeholder,
   value,
-  error,
+  err,
   info,
   type,
   onChange,
@@ -18,11 +18,7 @@ const TextFieldGroup = ({
       <Input
         type={type}
         className={
-          error
-            ? `is-invalid ${classes ? classes : ''}`
-            : classes
-            ? classes
-            : ''
+          err ? `is-invalid ${classes ? classes : ''}` : classes ? classes : ''
         }
         placeholder={placeholder}
         name={name}
@@ -31,7 +27,7 @@ const TextFieldGroup = ({
         disabled={disabled}
       />
       {info && <small className="form-text text-muted">{info}</small>}
-      {error && <FormFeedback>{error}</FormFeedback>}
+      {err && <FormFeedback>{err}</FormFeedback>}
     </FormGroup>
   );
 };
@@ -40,7 +36,7 @@ TextFieldGroup.propTypes = {
   name: PropTypes.string.isRequired,
   placeholder: PropTypes.string,
   value: PropTypes.string,
-  error: PropTypes.string,
+  err: PropTypes.string,
   info: PropTypes.string,
   type: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,

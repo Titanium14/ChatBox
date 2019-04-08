@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
-// // Load validation
+// Load validation
 const validateMessageInput = require('../../validation/createMsg');
 
 // Load Room model
@@ -10,6 +10,10 @@ const Room = require('../../models/Room');
 
 // Load Message model
 const Message = require('../../models/Message');
+
+//------------------------------------------------------------------
+// All GET requests
+//------------------------------------------------------------------
 
 // @route   GET api/messages/test
 // @desc    Tests messages route
@@ -23,18 +27,20 @@ router.get(
   '/:roomId',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
-    const errors = {};
     Room.findOne({ _id: req.params.roomId }).then(room => {
       Message.find({ roomId: room._id }).then(messages => {
         if (messages.length === 0) {
-          errors.nomessages = 'There are no messages';
-          return res.status(404).json(errors);
+          messages = 'There are no messages';
         }
         res.json(messages);
       });
     });
   }
 );
+
+//------------------------------------------------------------------
+// All POST requests
+//------------------------------------------------------------------
 
 // @route   POST api/messages/:roomId
 // @desc    Add message to room
@@ -53,7 +59,7 @@ router.post(
 
     const msgFields = {};
     const currentTime = new Date();
-    msgFields.roomId = req.params.id;
+    msgFields.roomId = req.params.roomId;
     if (req.body.msgContent) msgFields.msgContent = req.body.msgContent;
     msgFields.sendDate = currentTime.toLocaleTimeString();
 
@@ -66,7 +72,11 @@ router.post(
   }
 );
 
-// @route   DELETE api/budget/:roomId/:msgId
+//------------------------------------------------------------------
+// All DELETE requests
+//------------------------------------------------------------------
+
+// @route   DELETE api/messages/:roomId/:msgId
 // @desc    Delete message from room
 // @access  Private
 router.delete(
@@ -77,7 +87,7 @@ router.delete(
       .then(room => {
         // Do a check here if there is no rooms, do not execute following code
         console.log(room);
-        Message.findOneAndRemove({ _id: req.params.msgId })
+        Message.findOneAndDelete({ _id: req.params.msgId })
           .then(() => {
             res.json({ success: true });
           })

@@ -8,10 +8,14 @@ import {
   CardBody
 } from 'reactstrap';
 import PropTypes from 'prop-types';
+
+// The following imports below are for Redux.
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { registerUser } from '../../../redux/actions/authActions';
 
+// Importing all components to be used within this file.
+/* src/components/...... */
 import TextFieldGroup from '../../utils/textFieldGroup';
 
 class Register extends Component {
@@ -31,11 +35,13 @@ class Register extends Component {
   }
 
   componentDidMount() {
+    // This ensures that the page is only accessed by authenticated users.
     if (this.props.auth.isAuthenticated) {
       this.props.history.push('/');
     }
   }
 
+  // This method occurs only if there are any changes in props.
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.errors) {
       return { errors: nextProps.errors };
@@ -44,6 +50,7 @@ class Register extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    // If, when re-rendered, there are any lingering errors, store in state.
     if (prevProps.errors !== this.props.errors) {
       this.setState({ errors: this.props.errors });
     }
@@ -67,6 +74,7 @@ class Register extends Component {
       password2: this.state.password2
     };
 
+    // This points to a method inside "redux/actions/authAction.js"
     this.props.registerUser(newUser, this.props.history);
   }
 
@@ -133,11 +141,14 @@ Register.propTypes = {
   errors: PropTypes.object.isRequired
 };
 
+// This will take the array from the Redux store and map it onto the
+// array saved in state.
 const mapStateToProps = state => ({
   auth: state.auth,
   errors: state.errors
 });
 
+// The connect method connects this component to the Redux store.
 export default connect(
   mapStateToProps,
   { registerUser }

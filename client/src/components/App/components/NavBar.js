@@ -9,11 +9,15 @@ import {
   NavLink
 } from 'reactstrap';
 import PropTypes from 'prop-types';
+
+// The following imports below are for Redux.
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { logoutUser } from '../../../redux/actions/authActions';
 
-import CreateRoom from './createRoom';
+// Importing all components to be used within this file.
+/* src/components/...... */
+import CreateEditRoom from '../../utils/createEditRoom';
 
 class NavBar extends Component {
   constructor(props) {
@@ -33,13 +37,18 @@ class NavBar extends Component {
 
   onLogoutClick(e) {
     e.preventDefault();
+    // This points to a method inside "redux/actions/authAction.js"
     this.props.logoutUser(this.props.history);
   }
 
   render() {
     const { isAuthenticated, user } = this.props.auth;
+
+    // This variable is used to help determine the current location of the
+    // website to apply the active property on the nav items.
     const currentPage = this.props.location.pathname;
 
+    // This variable contains all links pertaining to any authenticated users.
     const authLinks = (
       <>
         <NavItem active={currentPage === '/Dashboard' ? true : false}>
@@ -61,6 +70,7 @@ class NavBar extends Component {
       </>
     );
 
+    // This variable contains all links pertaining to any non-authenticated users.
     const guestLinks = (
       <>
         <NavItem active={currentPage === '/Auth/register' ? true : false}>
@@ -83,17 +93,12 @@ class NavBar extends Component {
             <NavLink
               active={currentPage === '/CreateRoom' ? true : false}
               href="#">
-              <CreateRoom />
+              <CreateEditRoom invokedLocation="NavBar" />
             </NavLink>
             <NavLink
               active={currentPage === '/JoinRoom' ? true : false}
               href="/JoinRoom">
               Join a Room
-            </NavLink>
-            <NavLink
-              active={currentPage === '/UserRooms' ? true : false}
-              href="/UserRooms">
-              Your Rooms
             </NavLink>
           </Nav>
           <Nav className="ml-auto" navbar>
@@ -110,10 +115,13 @@ NavBar.propTypes = {
   auth: PropTypes.object.isRequired
 };
 
+// This will take the array from the Redux store and map it onto the
+// array saved in state.
 const mapStateToProps = state => ({
   auth: state.auth
 });
 
+// The connect method connects this component to the Redux store.
 export default connect(
   mapStateToProps,
   { logoutUser }

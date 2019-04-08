@@ -8,6 +8,10 @@ const validateRoomInput = require('../../validation/createRoom');
 // Load Room model
 const Room = require('../../models/Room');
 
+//------------------------------------------------------------------
+// All GET requests
+//------------------------------------------------------------------
+
 // @route   GET api/rooms/test
 // @desc    Tests rooms route
 // @access  Public
@@ -21,10 +25,30 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
     const errors = {};
-    Room.find({ user: req.user.id })
+    Room.find()
       .then(rooms => {
         if (rooms.length === 0) {
           errors.norooms = 'There are no rooms for this user';
+          return res.status(404).json(errors);
+        }
+        res.json(rooms);
+      })
+      .catch(err => res.status(404).json(err));
+  }
+);
+
+// @route   GET api/rooms/:userId
+// @desc    Get specified room of current user
+// @access  Private
+router.get(
+  '/:userId',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    const errors = {};
+    Room.find({ user: req.params.userId })
+      .then(rooms => {
+        if (!rooms) {
+          errors.noroom = 'This user does not have any rooms';
           return res.status(404).json(errors);
         }
         res.json(rooms);
@@ -53,6 +77,10 @@ router.get(
   }
 );
 
+//------------------------------------------------------------------
+// All POST requests
+//------------------------------------------------------------------
+
 // @route   POST api/rooms
 // @desc    Create rooms
 // @access  Private
@@ -70,20 +98,24 @@ router.post(
 
     // Get fields
     const roomFields = {};
+    const currentTime = new Date();
     roomFields.user = req.user.id;
     if (req.body.roomName) roomFields.roomName = req.body.roomName;
+    roomFields.dateCreated = currentTime.toLocaleString();
 
-    Room.findOne({ roomName: roomFields.roomName }).then(room => {
-      // Create
-
-      // Check if room exists
-      if (room) {
-        errors.roomName = 'That room already exists';
-        res.status(400).json(errors);
-      } else {
-        // Save room
-        new Room(roomFields).save().then(room => res.json(room));
-      }
+    User.findOne({ _id: roomFields.user }).then(user => {
+      Room.findOne({ user: user._id, roomName: roomFields.roomName }).then(
+        room => {
+          // Check if room exists
+          if (room) {
+            errors.roomName = 'That room already exists';
+            res.status(400).json(errors);
+          } else {
+            // Save room
+            new Room(roomFields).save().then(room => res.json(room));
+          }
+        }
+      );
     });
   }
 );
@@ -111,7 +143,6 @@ router.post(
     Room.findOne({ _id: req.params.roomId })
       .then(room => {
         if (room) {
-          // Update
           Room.findOneAndUpdate(
             { _id: req.params.roomId },
             { $set: roomFields },
@@ -126,6 +157,10 @@ router.post(
   }
 );
 
+//------------------------------------------------------------------
+// All DELETE requests
+//------------------------------------------------------------------
+
 // @route   DELETE api/rooms/:roomId
 // @desc    Delete room
 // @access  Private
@@ -133,9 +168,15 @@ router.delete(
   '/:roomId',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
-    Room.findOneAndRemove({ _id: req.params.roomId }).then(() => {
-      res.json({ success: true });
-    });
+    Room.findOneAndDelete({ _id: req.params.roomId })
+      .then(room => {
+        Message.deleteMany({ roomId: room._id })
+          .then(() => {
+            res.json({ success: true });
+          })
+          .catch(err => res.status(404).json(err));
+      })
+      .catch(err => res.status(404).json(err));
   }
 );
 

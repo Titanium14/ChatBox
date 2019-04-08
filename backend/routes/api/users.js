@@ -13,10 +13,44 @@ const validateLoginInput = require('../../validation/login');
 // Load User model
 const User = require('../../models/User');
 
+//------------------------------------------------------------------
+// All GET requests
+//------------------------------------------------------------------
+
 // @route   GET api/users/test
-// @desc    Tests users route
+// @desc    Route testing
 // @access  Public
 router.get('/test', (req, res) => res.json({ msg: 'Users works' }));
+
+// @route   GET api/users
+// @desc    Get all users
+// @access  Private
+router.get(
+  '/',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    User.find()
+      .then(users => {
+        if (users.length === 0) {
+          errors.nousers = 'There are no users';
+          return res.status(404).json(errors);
+        }
+
+        // This array is used to store the user objects containing only the
+        // document's ID and the user's name.
+        let userArray = [];
+        users.forEach(elem => {
+          const { _id, name } = elem;
+          let newObj = {};
+          newObj.id = _id;
+          newObj.name = name;
+          userArray.push(newObj);
+        });
+        res.json(userArray);
+      })
+      .catch(err => res.status(404).json(err));
+  }
+);
 
 // @route   GET api/users/current
 // @desc    Return current user
@@ -33,6 +67,10 @@ router.get(
     });
   }
 );
+
+//------------------------------------------------------------------
+// All POST requests
+//------------------------------------------------------------------
 
 // @route   POST api/users/register
 // @desc    Register user

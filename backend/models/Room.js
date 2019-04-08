@@ -10,6 +10,10 @@ const RoomSchema = new Schema({
   roomName: {
     type: String,
     required: true
+  },
+  dateCreated: {
+    type: String,
+    required: true
   }
 });
 

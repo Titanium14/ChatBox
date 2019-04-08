@@ -1,6 +1,8 @@
 import React from 'react';
 import { Row, Col } from 'reactstrap';
 
+// Importing all components to be used within this file.
+/* Auth/.... */
 import Login from './components/login';
 import Register from './components/register';
 
