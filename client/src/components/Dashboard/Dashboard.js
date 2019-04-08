@@ -44,7 +44,7 @@ class Dashboard extends Component {
   componentDidMount() {
     // This ensures that the page is only accessed by authenticated users.
     if (!this.props.auth.isAuthenticated) {
-      this.props.history.push('/');
+      this.props.history.push('/Auth/login');
     }
   }
 
