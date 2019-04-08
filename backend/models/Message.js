@@ -3,6 +3,10 @@ const Schema = mongoose.Schema;
 
 // Create Schema
 const MessageSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'users'
+  },
   roomId: {
     type: Schema.Types.ObjectId,
     ref: 'rooms'
@@ -12,6 +16,10 @@ const MessageSchema = new Schema({
     required: true
   },
   sendDate: {
+    type: String,
+    required: true
+  },
+  sendTime: {
     type: String,
     required: true
   }

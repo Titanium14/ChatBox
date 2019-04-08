@@ -2,7 +2,7 @@ import axios from 'axios';
 import setAuthToken from '../utils/setAuthToken';
 import jwt_decode from 'jwt-decode';
 
-import { GET_ERRORS, GET_USERS, SET_CURRENT_USER } from './types';
+import { GET_ERRORS, GET_USERS, EDIT_USER, SET_CURRENT_USER } from './types';
 
 // Get users
 export const getUsers = () => dispatch => {
@@ -12,6 +12,22 @@ export const getUsers = () => dispatch => {
       dispatch({ type: GET_USERS, payload: res.data });
     })
     .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
+};
+
+// Edit user
+export const editUser = userData => dispatch => {
+  axios
+    .post('/api/users/edit', userData)
+    .then(res => {
+      dispatch({ type: EDIT_USER, payload: res.data });
+      dispatch({ type: GET_ERRORS, payload: {} });
+    })
+    .catch(err =>
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      })
+    );
 };
 
 // Register user
@@ -71,4 +87,14 @@ export const logoutUser = history => dispatch => {
   if (history !== null) {
     history.push('/Auth/login');
   }
+};
+
+// Deletes user
+export const deleteUser = history => dispatch => {
+  axios
+    .delete('/api/users')
+    .then(res => {
+      history.push('/Auth/login');
+    })
+    .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };

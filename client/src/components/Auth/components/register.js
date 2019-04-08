@@ -86,7 +86,7 @@ class Register extends Component {
         <CardHeader className="text-center" tag="h2">
           Sign Up
         </CardHeader>
-        <CardBody>
+        <CardBody className="s-field-padding">
           <Form noValidate onSubmit={this.onSubmit}>
             <TextFieldGroup
               placeholder="Name"

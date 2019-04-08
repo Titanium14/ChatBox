@@ -59,9 +59,11 @@ router.post(
 
     const msgFields = {};
     const currentTime = new Date();
+    msgFields.user = req.user.id;
     msgFields.roomId = req.params.roomId;
     if (req.body.msgContent) msgFields.msgContent = req.body.msgContent;
-    msgFields.sendDate = currentTime.toLocaleTimeString();
+    msgFields.sendDate = currentTime.toLocaleDateString();
+    msgFields.sendTime = currentTime.toLocaleTimeString();
 
     Room.findOne({ _id: msgFields.roomId }).then(room => {
       Message.findOne({ roomId: room._id }).then(message => {

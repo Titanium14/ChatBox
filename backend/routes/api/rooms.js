@@ -171,7 +171,7 @@ router.delete(
     Room.findOneAndDelete({ _id: req.params.roomId })
       .then(room => {
         Message.deleteMany({ roomId: room._id })
-          .then(() => {
+          .then((res) => {
             res.json({ success: true });
           })
           .catch(err => res.status(404).json(err));

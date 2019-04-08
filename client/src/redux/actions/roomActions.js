@@ -51,13 +51,11 @@ export const editRoom = (roomId, roomData) => dispatch => {
 };
 
 // Deletes room
-export const deleteRoom = (roomId, history) => dispatch => {
+export const deleteRoom = roomId => dispatch => {
   axios
     .delete(`/api/rooms/${roomId}`)
     .then(res => {
       dispatch({ type: DELETE_ROOM, payload: {} });
-      history.push('/');
-      history.push('/JoinRoom');
     })
     .catch(err => dispatch({ type: GET_ERRORS, payload: err.response.data }));
 };

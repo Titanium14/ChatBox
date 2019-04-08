@@ -123,7 +123,7 @@ class CreateEditRoom extends Component {
 
     return (
       <>
-        {isAuth && invoked === 'NavBar' ? (
+        {invoked === 'NavBar' ? (
           <span onClick={this.toggle}>Create a Room</span>
         ) : (
           <></>

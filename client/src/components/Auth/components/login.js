@@ -82,7 +82,7 @@ class Login extends Component {
         <CardHeader className="text-center" tag="h2">
           Log In
         </CardHeader>
-        <CardBody>
+        <CardBody className="s-field-padding">
           <Form onSubmit={this.onSubmit}>
             <TextFieldGroup
               placeholder="Email Address"

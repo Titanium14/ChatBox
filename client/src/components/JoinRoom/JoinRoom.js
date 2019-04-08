@@ -12,7 +12,11 @@ import {
   getUserRooms,
   deleteRoom
 } from '../../redux/actions/roomActions';
-import { getMessages, emptyMessages } from '../../redux/actions/msgActions';
+import {
+  getMessages,
+  postMessage,
+  emptyMessages
+} from '../../redux/actions/msgActions';
 
 // Importing all components to be used within this file.
 /* JoinRoom/.... */
@@ -29,7 +33,8 @@ class JoinRoom extends Component {
       editAct: false,
 
       filterBy: '',
-      roomId: ''
+      roomId: '',
+      message: ''
     };
   }
 
@@ -106,8 +111,12 @@ class JoinRoom extends Component {
     const id = target.id;
 
     if (name === 'delete') {
-      // This points to a method inside "redux/actions/authAction.js"
-      this.props.deleteRoom(id, this.props.history);
+      // This points to a method inside "redux/actions/roomAction.js"
+      this.props.deleteRoom(id);
+      setTimeout(() => {
+        this.props.history.push('/');
+        this.props.history.push('/JoinRoom');
+      }, 300);
     } else {
       this.onToggleModal(id);
     }
@@ -115,6 +124,24 @@ class JoinRoom extends Component {
 
   onReturnClick() {
     this.props.history.push('/JoinRoom');
+  }
+
+  onChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
+  onSubmit(e) {
+    e.preventDefault();
+
+    const newMessage = {
+      msgContent: this.state.message
+    };
+    // This points to a method inside "redux/msgAction.js"
+    this.props.postMessage(
+      this.props.location.hash.substr(1),
+      newMessage,
+      this.props.history
+    );
   }
 
   render() {
@@ -136,7 +163,11 @@ class JoinRoom extends Component {
         ) : (
           <MessageBoard
             msgs={msgs.messages ? msgs.messages : msgs}
+            auth={this.props.auth}
+            message={this.state.message}
             onReturn={this.onReturnClick.bind(this)}
+            onChange={this.onChange.bind(this)}
+            onSubmit={this.onSubmit.bind(this)}
           />
         )}
       </>
@@ -145,6 +176,13 @@ class JoinRoom extends Component {
 }
 
 JoinRoom.propTypes = {
+  getUsers: PropTypes.func.isRequired,
+  getRooms: PropTypes.func.isRequired,
+  getUserRooms: PropTypes.func.isRequired,
+  deleteRoom: PropTypes.func.isRequired,
+  getMessages: PropTypes.func.isRequired,
+  postMessage: PropTypes.func.isRequired,
+  emptyMessages: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   room: PropTypes.object,
   messages: PropTypes.object
@@ -161,5 +199,13 @@ const mapStateToProps = state => ({
 // The connect method connects this component to the Redux store.
 export default connect(
   mapStateToProps,
-  { getUsers, getRooms, getUserRooms, deleteRoom, getMessages, emptyMessages }
+  {
+    getUsers,
+    getRooms,
+    getUserRooms,
+    deleteRoom,
+    getMessages,
+    postMessage,
+    emptyMessages
+  }
 )(JoinRoom);

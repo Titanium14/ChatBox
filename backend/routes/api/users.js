@@ -12,6 +12,7 @@ const validateLoginInput = require('../../validation/login');
 
 // Load User model
 const User = require('../../models/User');
+const Room = require('../../models/Room');
 
 //------------------------------------------------------------------
 // All GET requests
@@ -40,10 +41,11 @@ router.get(
         // document's ID and the user's name.
         let userArray = [];
         users.forEach(elem => {
-          const { _id, name } = elem;
+          const { _id, name, avatar } = elem;
           let newObj = {};
           newObj.id = _id;
           newObj.name = name;
+          newObj.avatar = avatar;
           userArray.push(newObj);
         });
         res.json(userArray);
@@ -167,5 +169,71 @@ router.post('/login', (req, res) => {
     });
   });
 });
+
+// @route   POST api/users/edit
+// @desc    Edits user
+// @access  Private
+router.post(
+  '/edit',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    const { errors, isValid } = validateRegisterInput(req.body);
+
+    // Check validation
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    const userFields = {};
+    if (req.body.name) userFields.name = req.body.name;
+    if (req.body.email) userFields.email = req.body.email;
+    if (req.body.password) userFields.password = req.body.password;
+    if (req.body.password2) userFields.password2 = req.body.password2;
+
+    User.findOne({ _id: req.user.id }).then(user => {
+      if (user) {
+        bcrypt.genSalt(10, (err, salt) => {
+          bcrypt.hash(userFields.password, salt, (err, hash) => {
+            if (err) throw err;
+            userFields.password = hash;
+            User.findOneAndUpdate(
+              { _id: req.user.id },
+              { $set: userFields },
+              { new: true }
+            )
+              .then(user => res.json(user))
+              .catch(err => console.log(err));
+          });
+        });
+      } else {
+        errors.user = 'Failed to update this user';
+        res.status(400).json(errors);
+      }
+    });
+  }
+);
+
+//------------------------------------------------------------------
+// All DELETE requests
+//------------------------------------------------------------------
+
+// @route   DELETE api/users/
+// @desc    Delete user
+// @access  Private
+router.delete(
+  '/',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    User.findOneAndDelete({ _id: req.user.id })
+      .then(() => {
+        Room.findOneAndDelete({ user: req.user.id })
+          .then(res => {
+            res.json({ success: true });
+          })
+          .catch(err => res.status(404).json(err));
+      })
+      .catch(err => res.status(404).json(err));
+  }
+);
 
 module.exports = router;

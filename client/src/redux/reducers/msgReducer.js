@@ -1,4 +1,4 @@
-import { GET_MESSAGES, EMPTY_MESSAGES } from '../actions/types';
+import { GET_MESSAGES, POST_MESSAGE, EMPTY_MESSAGES } from '../actions/types';
 
 const initialState = {
   messages: {}
@@ -7,6 +7,11 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case GET_MESSAGES:
+      return {
+        ...state,
+        messages: action.payload
+      };
+    case POST_MESSAGE:
       return {
         ...state,
         messages: action.payload
