@@ -98,8 +98,6 @@ class Dashboard extends Component {
     const { user } = this.props.auth;
     const { errors } = this.state;
 
-    console.log(errors);
-
     return (
       <Row className="m-spacing">
         <Col />
