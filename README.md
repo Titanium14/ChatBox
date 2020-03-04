@@ -29,13 +29,13 @@ npm run backend
 npm run client
 ```
 
-For development, you will need to create a <b>keys_dev.js</b> in the backend config folder:
+For development, you will need to create a <b>default.json</b> file in the backend config folder:
 
-```
-module.exports = {
+```javascript
+{
   mongoURI: 'YOUR_OWN_MONGO_URI',
-  secretOrKey: 'YOUR_OWN_SECRET'
-};
+  jwtSecret: 'YOUR_OWN_SECRET'
+}
 ```
 
 ## Technologies used
