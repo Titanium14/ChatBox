@@ -52,7 +52,7 @@ _Security & Communication_
 _Client_
 
 - [React](https://reactjs.org/) - A reactive, component-oriented, front-end JS library.
-- [Reactstrap](https://reactstrap.github.io/) - CSS Framework based on [Bootstrap 4](https://getbootstrap.com/).
+- [Reactstrap](https://reactstrap.github.io/) - Stateless React components based on the CSS Framework, [Bootstrap 4](https://getbootstrap.com/).
 - [Redux](https://redux.js.org/) - Application State Management Library
 
 ## Authors
