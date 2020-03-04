@@ -3,236 +3,66 @@ const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const keys = require('../../config/keys');
-const passport = require('passport');
-
-// Load input validation
-const validateRegisterInput = require('../../validation/register');
-const validateLoginInput = require('../../validation/login');
+const config = require('config');
+const { check, validationResult } = require('express-validator');
 
 // Load User model
 const User = require('../../models/User');
-const Room = require('../../models/Room');
 
-//------------------------------------------------------------------
-// All GET requests
-//------------------------------------------------------------------
-
-// @route   GET api/users/test
-// @desc    Route testing
+// @route   POST api/users
+// @desc    Register users
 // @access  Public
-router.get('/test', (req, res) => res.json({ msg: 'Users works' }));
-
-// @route   GET api/users
-// @desc    Get all users
-// @access  Private
-router.get(
-  '/',
-  passport.authenticate('jwt', { session: false }),
-  (req, res) => {
-    User.find()
-      .then(users => {
-        if (users.length === 0) {
-          errors.nousers = 'There are no users';
-          return res.status(404).json(errors);
-        }
-
-        // This array is used to store the user objects containing only the
-        // document's ID and the user's name.
-        let userArray = [];
-        users.forEach(elem => {
-          const { _id, name, avatar } = elem;
-          let newObj = {};
-          newObj.id = _id;
-          newObj.name = name;
-          newObj.avatar = avatar;
-          userArray.push(newObj);
-        });
-        res.json(userArray);
-      })
-      .catch(err => res.status(404).json(err));
-  }
-);
-
-// @route   GET api/users/current
-// @desc    Return current user
-// @access  Private
-router.get(
-  '/current',
-  passport.authenticate('jwt', { session: false }),
-  (req, res) => {
-    res.json({
-      id: req.user.id,
-      name: req.user.name,
-      email: req.user.email,
-      avatar: req.user.avatar
-    });
-  }
-);
-
-//------------------------------------------------------------------
-// All POST requests
-//------------------------------------------------------------------
-
-// @route   POST api/users/register
-// @desc    Register user
-// @access  Public
-router.post('/register', (req, res) => {
-  const { errors, isValid } = validateRegisterInput(req.body);
-
-  // Check validation
-  if (!isValid) {
-    return res.status(400).json(errors);
-  }
-
-  User.findOne({ email: req.body.email }).then(user => {
-    if (user) {
-      errors.email = 'Email already exists';
-      return res.status(400).json(errors);
-    } else {
-      const avatar = gravatar.url(req.body.email, {
-        s: '200', // Size
-        r: 'pg', // Rating
-        d: 'mm' // Default
-      });
-      const newUser = new User({
-        name: req.body.name,
-        email: req.body.email,
-        avatar,
-        password: req.body.password
-      });
-
-      bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(newUser.password, salt, (err, hash) => {
-          if (err) throw err;
-          newUser.password = hash;
-          newUser
-            .save()
-            .then(user => res.json(user))
-            .catch(err => console.log(err));
-        });
-      });
-    }
-  });
-});
-
-// @route   POST api/users/login
-// @desc    Login user / Returning JWT Token
-// @access  Public
-router.post('/login', (req, res) => {
-  const { errors, isValid } = validateLoginInput(req.body);
-
-  // Check validation
-  if (!isValid) {
-    return res.status(400).json(errors);
-  }
-
-  const email = req.body.email;
-  const password = req.body.password;
-
-  // Find user by email
-  User.findOne({ email }).then(user => {
-    // Check for user
-    if (!user) {
-      errors.email = 'User not found';
-      return res.status(404).json(errors);
-    }
-
-    // Check password
-    bcrypt.compare(password, user.password).then(isMatch => {
-      if (isMatch) {
-        // User matched
-
-        const payload = {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          avatar: user.avatar
-        }; // Create JWT payload
-
-        // Sign token
-        jwt.sign(
-          payload,
-          keys.secretOrKey,
-          { expiresIn: '3h' },
-          (err, token) => {
-            res.json({
-              success: true,
-              token: 'Bearer ' + token
-            });
-          }
-        );
-      } else {
-        errors.password = 'Password incorrect';
-        return res.status(400).json(errors);
-      }
-    });
-  });
-});
-
-// @route   POST api/users/edit
-// @desc    Edits user
-// @access  Private
 router.post(
-  '/edit',
-  passport.authenticate('jwt', { session: false }),
-  (req, res) => {
-    const { errors, isValid } = validateRegisterInput(req.body);
-
-    // Check validation
-    if (!isValid) {
-      return res.status(400).json(errors);
-    }
-
-    const userFields = {};
-    if (req.body.name) userFields.name = req.body.name;
-    if (req.body.email) userFields.email = req.body.email;
-    if (req.body.password) userFields.password = req.body.password;
-    if (req.body.password2) userFields.password2 = req.body.password2;
-
-    User.findOne({ _id: req.user.id }).then(user => {
-      if (user) {
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(userFields.password, salt, (err, hash) => {
-            if (err) throw err;
-            userFields.password = hash;
-            User.findOneAndUpdate(
-              { _id: req.user.id },
-              { $set: userFields },
-              { new: true }
-            )
-              .then(user => res.json(user))
-              .catch(err => console.log(err));
-          });
-        });
-      } else {
-        errors.user = 'Failed to update this user';
-        res.status(400).json(errors);
-      }
-    });
-  }
-);
-
-//------------------------------------------------------------------
-// All DELETE requests
-//------------------------------------------------------------------
-
-// @route   DELETE api/users/
-// @desc    Delete user
-// @access  Private
-router.delete(
   '/',
-  passport.authenticate('jwt', { session: false }),
-  (req, res) => {
-    User.findOneAndDelete({ _id: req.user.id })
-      .then(() => {
-        Room.findOneAndDelete({ user: req.user.id })
-          .then(res => {
-            res.json({ success: true });
-          })
-          .catch(err => res.status(404).json(err));
-      })
-      .catch(err => res.status(404).json(err));
+  [
+    check('name', 'Name is required')
+      .not()
+      .isEmpty(),
+    check('email', 'Please include a valid email').isEmail(),
+    check(
+      'password',
+      'Please enter a password with 6 or more characters'
+    ).isLength({ min: 6 })
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+
+    const { name, email, password } = req.body;
+
+    try {
+      let user = await User.findOne({ email });
+
+      if (user) {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: 'User already exists' }] });
+      }
+
+      const avatar = gravatar.url(email, { s: '200', r: 'pg', d: 'mm' });
+
+      user = new User({ name, email, avatar, password });
+
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+      await user.save();
+
+      const payload = { user: { id: user.id } };
+
+      jwt.sign(
+        payload,
+        config.get('jwtSecret'),
+        { expiresIn: '3h' },
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        }
+      );
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send('Server error');
+    }
   }
 );
 

@@ -7,20 +7,16 @@ const MessageSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'users'
   },
-  roomId: {
+  room_id: {
     type: Schema.Types.ObjectId,
     ref: 'rooms'
   },
-  msgContent: {
+  content: {
     type: String,
     required: true
   },
-  sendDate: {
-    type: String,
-    required: true
-  },
-  sendTime: {
-    type: String,
+  send_date: {
+    type: Date,
     required: true
   }
 });

@@ -1,38 +1,20 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const bodyparser = require('body-parser');
-const passport = require('passport');
+const connectDB = require('./config/db');
 const path = require('path');
-
-const users = require('./routes/api/users');
-const rooms = require('./routes/api/rooms');
-const messages = require('./routes/api/messages');
 
 const app = express();
 
-// Body parser middleware
-app.use(bodyparser.urlencoded({ extended: false }));
-app.use(bodyparser.json());
+// Connect DB
+connectDB();
 
-// DB config
-const db = require('./config/keys').mongoURI;
-
-// Connect to MongoDB
-mongoose
-  .connect(db, { useNewUrlParser: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
-
-// Passport middleware
-app.use(passport.initialize());
-
-// Passport config
-require('./config/passport')(passport);
+// Init middleware
+app.use(express.json({ extended: false }));
 
 // Use routes
-app.use('/api/users', users);
-app.use('/api/rooms', rooms);
-app.use('/api/messages', messages);
+app.use('/api/users', require('./routes/api/users'));
+app.use('/api/auth', require('./routes/api/auth'));
+app.use('/api/rooms', require('./routes/api/rooms'));
+app.use('/api/messages', require('./routes/api/messages'));
 
 // Server static assets if in production
 if (process.env.NODE_ENV === 'production') {

@@ -7,12 +7,12 @@ const RoomSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'users'
   },
-  roomName: {
+  room_name: {
     type: String,
     required: true
   },
-  dateCreated: {
-    type: String,
+  date_created: {
+    type: Date,
     required: true
   }
 });

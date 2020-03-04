@@ -1,7 +1,5 @@
 # ChatBox - A chatroom application where you can chat with a variety of people online!
 
-A live demo of this repository is available on [Heroku](https://chatbox3.herokuapp.com).
-
 ## Description
 
 ChatBox is a full-stack JS web application, utilising four main technologies: MongoDB, Express, React and Node, otherwise known as the MERN stack. In this app, users are able to enter chatrooms and converse with any users within the rooms. Additionally, users are able to create their own rooms, whether it is public or private is up to their discretion.
@@ -44,18 +42,17 @@ module.exports = {
 
 _Database_
 
-- [MongoDB](https://www.mongodb.com/cloud/atlas) - MongoDB (MongoDB Atlas)
+- [MongoDB](https://www.mongodb.com/) - A NoSQL collection-oriented database, formatted in JSON. MongoDB is available locally or as an online service, e.g. [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
 
 _Security & Communication_
 
-- [Express](https://expressjs.com/) - Express
-- [Passport](http://www.passportjs.org/) - Passport
+- [Express](https://expressjs.com/) - A Node.js web app framework utilised as a server, handles web APIs requests, serves files to clients and provides access to the DB.
+- [Node](https://nodejs.org/en/) - A JS runtime environment installed on the server for server-side execution of JS code.
 
 _Client_
 
-- [Node](https://nodejs.org/en/) - Module Installer
-- [React](https://reactjs.org/) - JS Library
-- [Reactstrap](https://reactstrap.github.io/) - CSS Framework based on Bootstrap 4
+- [React](https://reactjs.org/) - A reactive, component-oriented, front-end JS library.
+- [Reactstrap](https://reactstrap.github.io/) - CSS Framework based on [Bootstrap 4](https://getbootstrap.com/).
 - [Redux](https://redux.js.org/) - Application State Management Library
 
 ## Authors
