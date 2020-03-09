@@ -12,29 +12,23 @@ const TextFieldGroup = ({
   onChange,
   disabled,
   classes
-}) => {
-  return (
-    <FormGroup row>
-      <Input
-        type={type}
-        className={
-          error
-            ? `is-invalid ${classes ? classes : ''}`
-            : classes
-            ? classes
-            : ''
-        }
-        placeholder={placeholder}
-        name={name}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-      />
-      {info && <small className="form-text text-muted">{info}</small>}
-      {error && <FormFeedback>{error}</FormFeedback>}
-    </FormGroup>
-  );
-};
+}) => (
+  <FormGroup row>
+    <Input
+      type={type}
+      className={
+        error ? `is-invalid ${classes ? classes : ''}` : classes ? classes : ''
+      }
+      placeholder={placeholder}
+      name={name}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+    />
+    {info && <small className="form-text text-muted">{info}</small>}
+    {error && <FormFeedback>{error}</FormFeedback>}
+  </FormGroup>
+);
 
 TextFieldGroup.propTypes = {
   name: PropTypes.string.isRequired,

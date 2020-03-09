@@ -1,24 +1,22 @@
 import React from 'react';
 import { Row, Col } from 'reactstrap';
+import PropTypes from 'prop-types';
 
-// Importing the custom styles in.
 import './Auth.css';
 
-// Importing all components to be used within this file.
-/* Auth/.... */
 import Login from './components/login';
 import Register from './components/register';
 
-const Auth = props => {
-  return (
-    <Row className="m-spacing">
-      <Col />
-      <Col lg={4}>
-        {props.location.pathname === '/Auth/login' ? <Login /> : <Register />}
-      </Col>
-      <Col />
-    </Row>
-  );
+const Auth = ({ location: { pathname } }) => (
+  <Row className="m-spacing">
+    <Col />
+    <Col lg={4}>{pathname === '/Auth/login' ? <Login /> : <Register />}</Col>
+    <Col />
+  </Row>
+);
+
+Auth.propTypes = {
+  location: PropTypes.object.isRequired
 };
 
 export default Auth;

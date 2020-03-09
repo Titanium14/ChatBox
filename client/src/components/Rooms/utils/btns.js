@@ -2,16 +2,26 @@ import React from 'react';
 import { Button } from 'reactstrap';
 import PropTypes from 'prop-types';
 
-const Buttons = props => {
+const Buttons = ({
+  id,
+  roomName,
+  btnText,
+  btnName,
+  btnColor,
+  handleClick,
+  size
+}) => {
   return (
     <Button
       className="s-parent-width"
-      id={props.id}
-      name={props.btnName}
-      color={props.btnColor}
-      onClick={props.handleClick}
-      size={props.size}>
-      {props.btnText}
+      room={roomName}
+      id={id}
+      name={btnName}
+      color={btnColor}
+      onClick={e => handleClick(e)}
+      size={size}
+    >
+      {btnText}
     </Button>
   );
 };

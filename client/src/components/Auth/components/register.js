@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import {
   Button,
   Form,
@@ -9,147 +10,99 @@ import {
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 
-// The following imports below are for Redux.
-import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { registerUser } from '../../../redux/actions/authActions';
+import { register } from '../../../redux/actions/auth';
 
-// Importing all components to be used within this file.
-/* src/components/...... */
-import TextFieldGroup from '../../utils/textFieldGroup';
+import TextFieldGroup from '../../shared/components/textFieldGroup';
 
-class Register extends Component {
-  constructor(props) {
-    super(props);
+const Register = ({ register, isAuthenticated, error }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    password2: '',
+    passConfirmed: ''
+  });
 
-    this.state = {
-      name: '',
-      email: '',
-      password: '',
-      password2: '',
-      errors: {}
-    };
+  const { name, email, password, password2, passConfirmed } = formData;
 
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-  }
+  const onChange = e =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  componentDidMount() {
-    // This ensures that the page is only accessed by authenticated users.
-    if (this.props.auth.isAuthenticated) {
-      this.props.history.push('/');
-    }
-  }
-
-  // This method occurs only if there are any changes in props.
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.errors) {
-      return { errors: nextProps.errors };
-    }
-    return null;
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // If, when re-rendered, there are any lingering errors, store in state.
-    if (prevProps.errors !== this.props.errors) {
-      this.setState({ errors: this.props.errors });
-    }
-    if (this.props.auth.isAuthenticated) {
-      this.setState({ isAuthenticated: this.props.auth.isAuthenticated });
-      this.props.history.push('/');
-    }
-  }
-
-  onChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
-  }
-
-  onSubmit(e) {
+  const onSubmit = e => {
     e.preventDefault();
+    if (password !== password2) {
+      setFormData({ ...formData, passConfirmed: 'Passwords do not match' });
+    } else {
+      setFormData({ ...formData, passConfirmed: '' });
+      register(name, email, password);
+    }
+  };
 
-    const newUser = {
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password,
-      password2: this.state.password2
-    };
+  if (isAuthenticated) return <Redirect to="/Dashboard" />;
 
-    // This points to a method inside "redux/actions/authAction.js"
-    this.props.registerUser(newUser, this.props.history);
-  }
-
-  render() {
-    const { errors } = this.state;
-
-    return (
-      <Card>
-        <CardHeader className="text-center" tag="h2">
-          Sign Up
-        </CardHeader>
-        <CardBody className="s-field-padding">
-          <Form noValidate onSubmit={this.onSubmit}>
-            <TextFieldGroup
-              placeholder="Name"
-              name="name"
-              value={this.state.name}
-              onChange={this.onChange}
-              error={errors.name}
-            />
-            <TextFieldGroup
-              placeholder="Email Address"
-              name="email"
-              type="email"
-              value={this.state.email}
-              onChange={this.onChange}
-              error={errors.email}
-              info="This site uses Gravatar so if you want a profile image, use a Gravatar email"
-            />
-            <TextFieldGroup
-              placeholder="Password"
-              name="password"
-              type="password"
-              value={this.state.password}
-              onChange={this.onChange}
-              error={errors.password}
-            />
-            <TextFieldGroup
-              placeholder="Confirm password"
-              name="password2"
-              type="password"
-              value={this.state.password2}
-              onChange={this.onChange}
-              error={errors.password2}
-            />
-            <FormGroup row>
-              <Button color="primary" block>
-                Sign Up
-              </Button>
-            </FormGroup>
-          </Form>
-          <Button href="/Auth/login" color="link" block>
-            Have an account?
-          </Button>
-        </CardBody>
-      </Card>
-    );
-  }
-}
-
-Register.propTypes = {
-  registerUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  return (
+    <Card>
+      <CardHeader className="text-center" tag="h2">
+        Sign Up
+      </CardHeader>
+      <CardBody className="s-field-padding">
+        <Form noValidate onSubmit={e => onSubmit(e)}>
+          <TextFieldGroup
+            placeholder="Name"
+            name="name"
+            value={name}
+            onChange={e => onChange(e)}
+            error={error.name}
+          />
+          <TextFieldGroup
+            placeholder="Email Address"
+            name="email"
+            type="email"
+            value={email}
+            onChange={e => onChange(e)}
+            error={error.email}
+            info="This site uses Gravatar so if you want a profile image, use a Gravatar email"
+          />
+          <TextFieldGroup
+            placeholder="Password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={e => onChange(e)}
+            error={error.password}
+          />
+          <TextFieldGroup
+            placeholder="Confirm password"
+            name="password2"
+            type="password"
+            value={password2}
+            onChange={e => onChange(e)}
+            error={passConfirmed}
+          />
+          <FormGroup row>
+            <Button color="primary" block>
+              Sign Up
+            </Button>
+          </FormGroup>
+        </Form>
+        <Button href="/Auth/login" color="link" block>
+          Have an account?
+        </Button>
+      </CardBody>
+    </Card>
+  );
 };
 
-// This will take the array from the Redux store and map it onto the
-// array saved in state.
+Register.propTypes = {
+  register: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool,
+  error: PropTypes.object.isRequired
+};
+
 const mapStateToProps = state => ({
-  auth: state.auth,
-  errors: state.errors
+  isAuthenticated: state.auth.isAuthenticated,
+  error: state.error
 });
 
-// The connect method connects this component to the Redux store.
-export default connect(
-  mapStateToProps,
-  { registerUser }
-)(withRouter(Register));
+export default connect(mapStateToProps, { register })(Register);

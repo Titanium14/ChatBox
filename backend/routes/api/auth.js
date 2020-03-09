@@ -9,9 +9,22 @@ const auth = require('../../middleware/auth');
 const User = require('../../models/User');
 
 // @route   GET api/auth
+// @desc    Get all users
+// @access  Private
+router.get('/', async (req, res) => {
+  try {
+    const user = await User.find().select('-password');
+    res.json(user);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send('Server error');
+  }
+});
+
+// @route   GET api/auth/current
 // @desc    Get current user's details
 // @access  Private
-router.get('/', auth, async (req, res) => {
+router.get('/current', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     res.json(user);

@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import {
   Button,
   Form,
@@ -9,127 +10,75 @@ import {
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 
-// The following imports below are for Redux.
-import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { loginUser } from '../../../redux/actions/authActions';
+import { login } from '../../../redux/actions/auth';
 
-// Importing all components to be used within this file.
-/* src/components/...... */
-import TextFieldGroup from '../../utils/textFieldGroup';
+import TextFieldGroup from '../../shared/components/textFieldGroup';
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
+const Login = ({ login, isAuthenticated, error }) => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
 
-    this.state = {
-      email: '',
-      password: '',
-      errors: {}
-    };
+  const { email, password } = formData;
 
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-  }
+  const onChange = e =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  componentDidMount() {
-    // This ensures that the page is only accessed by authenticated users.
-    if (this.props.auth.isAuthenticated) {
-      this.props.history.push('/');
-    }
-  }
-
-  // This method occurs only if there are any changes in props.
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.errors) {
-      return { errors: nextProps.errors };
-    }
-    return null;
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    // If, when re-rendered, there are any lingering errors, store in state.
-    if (prevProps.errors !== this.props.errors) {
-      this.setState({ errors: this.props.errors });
-    }
-    if (this.props.auth.isAuthenticated) {
-      this.setState({ isAuthenticated: this.props.auth.isAuthenticated });
-      this.props.history.push('/');
-    }
-  }
-
-  onSubmit(e) {
+  const onSubmit = e => {
     e.preventDefault();
+    login(email, password);
+  };
 
-    const userData = {
-      email: this.state.email,
-      password: this.state.password
-    };
+  if (isAuthenticated) return <Redirect to="/Dashboard" />;
 
-    // This points to a method inside "redux/actions/authAction.js"
-    this.props.loginUser(userData);
-  }
-
-  onChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
-  }
-
-  render() {
-    const { errors } = this.state;
-
-    return (
-      <Card>
-        <CardHeader className="text-center" tag="h2">
-          Log In
-        </CardHeader>
-        <CardBody className="s-field-padding">
-          <Form onSubmit={this.onSubmit}>
-            <TextFieldGroup
-              placeholder="Email Address"
-              name="email"
-              type="email"
-              value={this.state.email}
-              onChange={this.onChange}
-              error={errors.email}
-            />
-            <TextFieldGroup
-              placeholder="Password"
-              name="password"
-              type="password"
-              value={this.state.password}
-              onChange={this.onChange}
-              error={errors.password}
-            />
-            <FormGroup row>
-              <Button color="primary" block>
-                Login
-              </Button>
-            </FormGroup>
-          </Form>
-          <Button href="/Auth/register" color="link" block>
-            Create account
-          </Button>
-        </CardBody>
-      </Card>
-    );
-  }
-}
-
-Login.propTypes = {
-  loginUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  return (
+    <Card>
+      <CardHeader className="text-center" tag="h2">
+        Log In
+      </CardHeader>
+      <CardBody className="s-field-padding">
+        <Form onSubmit={e => onSubmit(e)}>
+          <TextFieldGroup
+            placeholder="Email Address"
+            name="email"
+            type="email"
+            value={email}
+            onChange={e => onChange(e)}
+            error={error.email}
+          />
+          <TextFieldGroup
+            placeholder="Password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={e => onChange(e)}
+            error={error.password}
+          />
+          <FormGroup row>
+            <Button color="primary" block>
+              Login
+            </Button>
+          </FormGroup>
+        </Form>
+        <Button href="/Auth/register" color="link" block>
+          Create account
+        </Button>
+      </CardBody>
+    </Card>
+  );
 };
 
-// This will take the array from the Redux store and map it onto the
-// array saved in state.
+Login.propTypes = {
+  login: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool,
+  error: PropTypes.object.isRequired
+};
+
 const mapStateToProps = state => ({
-  auth: state.auth,
-  errors: state.errors
+  isAuthenticated: state.auth.isAuthenticated,
+  error: state.error
 });
 
-// The connect method connects this component to the Redux store.
-export default connect(
-  mapStateToProps,
-  { loginUser }
-)(withRouter(Login));
+export default connect(mapStateToProps, { login })(Login);

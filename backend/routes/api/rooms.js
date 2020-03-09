@@ -10,7 +10,7 @@ const Message = require('../../models/Message');
 // @route   GET api/rooms
 // @desc    Get all rooms
 // @access  Private
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const rooms = await Room.find();
     res.json(rooms);
@@ -99,7 +99,7 @@ router.post(
   }
 );
 
-// @route   POST api/rooms/:roomId
+// @route   PUT api/rooms/:roomId
 // @desc    Edit rooms
 // @access  Private
 router.put(

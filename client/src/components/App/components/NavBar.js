@@ -1,128 +1,77 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import {
   Collapse,
   Navbar,
   NavbarToggler,
   NavbarBrand,
   Nav,
-  NavItem,
   NavLink
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 
-// The following imports below are for Redux.
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { logoutUser } from '../../../redux/actions/authActions';
+import { logout } from '../../../redux/actions/auth';
 
-// Importing all components to be used within this file.
-/* src/components/...... */
-import CreateEditRoom from '../../utils/createEditRoom';
+import CrudModal from '../../shared/components/crudModal';
+import { authLinks, guestLinks } from '../utils/links';
 
-class NavBar extends Component {
-  constructor(props) {
-    super(props);
+const NavBar = ({
+  auth: { user, isAuthenticated },
+  logout,
+  history,
+  location: { pathname }
+}) => {
+  const [open, setOpen] = useState(false);
+  const [modal, setModal] = useState(false);
 
-    this.state = {
-      isOpen: false
-    };
+  const handleOpen = () => setOpen(!open);
+  const handleModal = () => setModal(!modal);
 
-    this.toggle = this.toggle.bind(this);
-    this.onLogoutClick = this.onLogoutClick.bind(this);
-  }
-
-  toggle() {
-    this.setState({ isOpen: !this.state.isOpen });
-  }
-
-  onLogoutClick(e) {
+  const onLogout = e => {
     e.preventDefault();
-    // This points to a method inside "redux/actions/authAction.js"
-    this.props.logoutUser(this.props.history);
-  }
+    logout(history);
+  };
 
-  render() {
-    const { isAuthenticated, user } = this.props.auth;
+  const aLinks = authLinks(user ? user : null, pathname, onLogout);
+  const gLinks = guestLinks(pathname);
 
-    // This variable is used to help determine the current location of the
-    // website to apply the active property on the nav items.
-    const currentPage = this.props.location.pathname;
-
-    // This variable contains all links pertaining to any authenticated users.
-    const authLinks = (
-      <>
-        <NavItem active={currentPage === '/Dashboard' ? true : false}>
-          <NavLink href="/Dashboard">
-            <img
-              src={user.avatar}
-              alt={user.name}
-              className="rounded-circle s-profile-img"
-              title="You must have a Gravatar connected to your email to display an image"
-            />{' '}
-            {user.name}
+  return (
+    <Navbar color="light" light expand="md">
+      <NavbarBrand href="/">
+        <h3 className="m-main-color">ChatBox</h3>
+      </NavbarBrand>
+      <NavbarToggler onClick={handleOpen} />
+      <Collapse isOpen={open} navbar>
+        <Nav className="mr-auto" navbar>
+          <NavLink active={pathname === '/CreateRoom' ? true : false} href="#">
+            <CrudModal
+              invokedLoc="navbar"
+              modal={modal}
+              handleModal={handleModal}
+            />
           </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink href="/Auth/login" onClick={this.onLogoutClick}>
-            Logout
+          <NavLink active={pathname === '/Rooms' ? true : false} href="/Rooms">
+            Join a Room
           </NavLink>
-        </NavItem>
-      </>
-    );
-
-    // This variable contains all links pertaining to any non-authenticated users.
-    const guestLinks = (
-      <>
-        <NavItem active={currentPage === '/Auth/register' ? true : false}>
-          <NavLink href="/Auth/register">Sign Up</NavLink>
-        </NavItem>
-        <NavItem active={currentPage === '/Auth/login' ? true : false}>
-          <NavLink href="/Auth/login">Login</NavLink>
-        </NavItem>
-      </>
-    );
-
-    return (
-      <Navbar color="light" light expand="md">
-        <NavbarBrand href="/">
-          <h3 className="m-main-color">ChatBox</h3>
-        </NavbarBrand>
-        <NavbarToggler onClick={this.toggle} />
-        <Collapse isOpen={this.state.isOpen} navbar>
-          <Nav className="mr-auto" navbar>
-            <NavLink
-              active={currentPage === '/CreateRoom' ? true : false}
-              href="#">
-              <CreateEditRoom invokedLocation="NavBar" />
-            </NavLink>
-            <NavLink
-              active={currentPage === '/JoinRoom' ? true : false}
-              href="/JoinRoom">
-              Join a Room
-            </NavLink>
-          </Nav>
-          <Nav className="ml-auto" navbar>
-            {isAuthenticated ? authLinks : guestLinks}
-          </Nav>
-        </Collapse>
-      </Navbar>
-    );
-  }
-}
-
-NavBar.propTypes = {
-  logoutUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+        </Nav>
+        <Nav className="ml-auto" navbar>
+          {isAuthenticated ? aLinks : gLinks}
+        </Nav>
+      </Collapse>
+    </Navbar>
+  );
 };
 
-// This will take the array from the Redux store and map it onto the
-// array saved in state.
+NavBar.propTypes = {
+  auth: PropTypes.object.isRequired,
+  logout: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired
+};
+
 const mapStateToProps = state => ({
   auth: state.auth
 });
 
-// The connect method connects this component to the Redux store.
-export default connect(
-  mapStateToProps,
-  { logoutUser }
-)(withRouter(NavBar));
+export default connect(mapStateToProps, { logout })(withRouter(NavBar));

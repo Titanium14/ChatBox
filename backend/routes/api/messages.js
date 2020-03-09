@@ -22,7 +22,7 @@ router.get('/:roomId', auth, async (req, res) => {
         .json({ errors: [{ msg: 'This room does not exist.' }] });
     }
 
-    let msg = await Message.find();
+    let msg = await Message.find({ room_id: roomId });
 
     if (msg === null) {
       msg = 'There are no messages';

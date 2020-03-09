@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
   Row,
   Col,
@@ -9,60 +9,70 @@ import {
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 
-// Importing all components to be used within this file.
-/* JoinRoom/components/.... */
-import Buttons from './buttons';
+import Buttons from '../utils/btns';
+import { useWindowDimensions } from '../../shared/utils/windowDimensions';
 
-const RoomList = props => {
+const RoomList = ({
+  id,
+  name,
+  date,
+  creator,
+  currUser,
+  onUpdate,
+  onDelete
+}) => {
+  const { width } = useWindowDimensions();
   return (
     <Row noGutters>
       <Col lg={12}>
         <ListGroupItem className="s-hover-bg s-remove-padding">
           <Row noGutters>
             <Col>
-              <a className="s-link" href={`/JoinRoom#${props.id}`}>
+              <a className="s-link" href={`/MessageBoard#${id}`}>
                 <div className="s-apply-padding">
                   <ListGroupItemHeading
                     tag="h3"
-                    className="m-element-spacing-bottom">
-                    {props.name}
+                    className="m-element-spacing-bottom"
+                  >
+                    {name}
                   </ListGroupItemHeading>
+                  <ListGroupItemText tag="p">Made on: {date}</ListGroupItemText>
                   <ListGroupItemText tag="p">
-                    Made on: {props.date}
-                  </ListGroupItemText>
-                  <ListGroupItemText tag="p">
-                    Created by: {props.creator}
+                    Created by: {creator}
                   </ListGroupItemText>
                 </div>
               </a>
             </Col>
-            {props.auth.user.name === props.creator ? (
+            {currUser === creator ? (
               <Col
                 className={`d-flex justify-content-end ${
-                  props.width < 992 ? 'flex-column' : 'flex-row'
+                  width < 992 ? 'flex-column' : 'flex-row'
                 }`}
-                lg={3}>
+                lg={3}
+              >
                 <ButtonGroup className="s-parent-width" vertical>
                   <Buttons
-                    id={props.id}
+                    id={id}
+                    roomName={name}
                     btnText="Edit Room"
                     btnName="edit"
                     btnColor="info"
-                    handleClick={props.onOperation}
+                    handleClick={e => onUpdate(e)}
                     size="lg"
                   />
                   <Buttons
-                    id={props.id}
+                    id={id}
+                    roomName={name}
                     btnText="Delete Room"
                     btnName="delete"
                     btnColor="danger"
-                    handleClick={props.onOperation}
+                    handleClick={e => onDelete(e)}
                     size="lg"
                   />
                 </ButtonGroup>
               </Col>
             ) : (
-              <></>
+              <Fragment></Fragment>
             )}
           </Row>
         </ListGroupItem>
@@ -76,7 +86,9 @@ RoomList.propTypes = {
   name: PropTypes.string.isRequired,
   date: PropTypes.string.isRequired,
   creator: PropTypes.string.isRequired,
-  onOperation: PropTypes.func.isRequired
+  currUser: PropTypes.string,
+  onUpdate: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired
 };
 
 export default RoomList;

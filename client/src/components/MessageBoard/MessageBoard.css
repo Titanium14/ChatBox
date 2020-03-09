@@ -1,0 +1,16 @@
+.s-max-height {
+  max-height: 800px;
+  overflow-y: scroll;
+}
+
+.s-element-spacer {
+  margin-left: 5px;
+}
+
+.s-image-size {
+  width: 60px;
+}
+
+.s-display-msg {
+  display: inline-block;
+}

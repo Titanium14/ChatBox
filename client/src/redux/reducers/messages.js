@@ -1,7 +1,7 @@
-import { GET_MESSAGES, POST_MESSAGE, EMPTY_MESSAGES } from '../actions/types';
+import { GET_MESSAGES, POST_MESSAGE, DELETE_MESSAGE } from '../actions/types';
 
 const initialState = {
-  messages: {}
+  messages: null
 };
 
 export default function(state = initialState, action) {
@@ -12,14 +12,9 @@ export default function(state = initialState, action) {
         messages: action.payload
       };
     case POST_MESSAGE:
+    case DELETE_MESSAGE:
       return {
-        ...state,
-        messages: action.payload
-      };
-    case EMPTY_MESSAGES:
-      return {
-        ...state,
-        messages: {}
+        ...state
       };
     default:
       return state;
