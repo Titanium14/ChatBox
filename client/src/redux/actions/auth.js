@@ -28,6 +28,7 @@ export const loadUser = () => async dispatch => {
   }
 };
 
+// Gets all users
 export const retrieveUsers = () => async dispatch => {
   try {
     const res = await axios.get('/api/auth');

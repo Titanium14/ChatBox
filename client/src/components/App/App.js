@@ -35,7 +35,7 @@ const App = () => {
           <NavBar />
           <Switch>
             <Route exact path="/" component={Home} />
-            {/* <PrivateRoute exact path="/Dashboard" component={Dashboard} /> */}
+            <PrivateRoute exact path="/Dashboard" component={Dashboard} />
             <Route exact path="/Auth/login" component={Auth} />
             <Route exact path="/Auth/register" component={Auth} />
             <Route exact path="/Rooms" component={Rooms} />
