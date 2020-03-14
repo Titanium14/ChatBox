@@ -39,7 +39,7 @@ export const postMessage = (roomId, content) => async dispatch => {
 };
 
 // Delete message
-export const deleteRoom = (roomId, msgId) => async dispatch => {
+export const deleteMessage = (roomId, msgId) => async dispatch => {
   try {
     await axios.delete(`/api/messages/${roomId}/${msgId}`);
     dispatch({ type: DELETE_MESSAGE });

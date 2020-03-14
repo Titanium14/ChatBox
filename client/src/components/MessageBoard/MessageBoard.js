@@ -19,12 +19,16 @@ import './MessageBoard.css';
 import { connect } from 'react-redux';
 import { retrieveUsers } from '../../redux/actions/auth';
 import { getRoomById } from '../../redux/actions/room';
-import { getMessages, postMessage } from '../../redux/actions/messages';
+import {
+  getMessages,
+  postMessage,
+  deleteMessage
+} from '../../redux/actions/messages';
 
 import MessageList from './components/messageList';
 
 const MessageBoard = ({
-  auth: { isAuthenticated, allUsers },
+  auth: { isAuthenticated, user, allUsers },
   room: { selectedRoom },
   messages: { messages },
   history: {
@@ -34,19 +38,20 @@ const MessageBoard = ({
   retrieveUsers,
   getRoomById,
   getMessages,
-  postMessage
+  postMessage,
+  deleteMessage
 }) => {
-  const [formData, setFormData] = useState({ content: '' });
+  const [value, setValue] = useState('');
 
-  const { content } = formData;
-
-  const onChange = e => setFormData({ [e.target.name]: e.target.value });
+  const onChange = e => setValue(e.target.value);
   const onReturn = () => push('/Rooms');
+  const onDelete = e => deleteMessage(selectedRoom._id, e.target.id);
 
   const onSubmit = e => {
-    e.preventDefault();
+    postMessage(hash.substr(1), value);
+    setValue('');
 
-    postMessage(hash.substr(1), content);
+    e.preventDefault();
   };
 
   useEffect(() => {
@@ -56,8 +61,6 @@ const MessageBoard = ({
       getMessages(hash.substr(1));
     }
   }, [isAuthenticated, hash, retrieveUsers, getRoomById, getMessages]);
-
-  console.log(isAuthenticated);
 
   if (!isAuthenticated && isAuthenticated !== null)
     return <Redirect to="/Auth/login" />;
@@ -86,12 +89,16 @@ const MessageBoard = ({
       return (
         <MessageList
           key={m._id}
+          id={m._id}
+          userId={m.user}
+          storeUser={user._id}
           content={m.content}
           date={formatDate}
           username={username}
           avatar={avatar}
           isSameUser={isSameUser}
           isRuleApply={isRuleApply}
+          onDelete={onDelete}
         />
       );
     });
@@ -130,7 +137,9 @@ const MessageBoard = ({
               <Input
                 type="text"
                 name="content"
+                value={value}
                 placeholder="Enter message"
+                autoComplete="off"
                 onChange={e => onChange(e)}
               />
             </FormGroup>
@@ -163,5 +172,6 @@ export default connect(mapStateToProps, {
   retrieveUsers,
   getRoomById,
   getMessages,
-  postMessage
+  postMessage,
+  deleteMessage
 })(withRouter(MessageBoard));

@@ -14,3 +14,13 @@
 .s-display-msg {
   display: inline-block;
 }
+
+.s-msg-line {
+  display: flex;
+  align-items: baseline;
+}
+
+.s-btn-override .btn-outline-danger {
+  border-color: transparent;
+  margin-left: 0.2rem;
+}
